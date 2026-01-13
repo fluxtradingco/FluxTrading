@@ -113,11 +113,11 @@
         <div class="rates-container">
             <div class="rate-card">
                 <span class="coin-name">Bitcoin</span>
-                <span id="btc-price" class="coin-price">$64,210</span>
+                <span id="btc-price" class="coin-price">$92,210</span>
             </div>
             <div class="rate-card">
                 <span class="coin-name">Ethereum</span>
-                <span id="eth-price" class="coin-price">$3,450</span>
+                <span id="eth-price" class="coin-price">$3,150</span>
             </div>
             <div class="rate-card">
                 <span class="coin-name">Solana</span>
@@ -132,10 +132,10 @@
 
     <script>
         // Main Balance Fluctuation (350 - 400 CAD)
-        let lastBalance = 375.00;
+        let lastBalance = 500.00;
         function updateBalance() {
             const el = document.getElementById('main-balance');
-            const newVal = (Math.random() * (400 - 350) + 350).toFixed(2);
+            const newVal = (Math.random() * (600 - 500) + 550).toFixed(2);
             
             el.classList.remove('trend-up', 'trend-down');
             el.classList.add(newVal > lastBalance ? 'trend-up' : 'trend-down');
@@ -146,9 +146,9 @@
 
         // Crypto Rates Fluctuation Logic
         const coins = [
-            { id: 'btc-price', base: 64000 },
-            { id: 'eth-price', base: 3400 },
-            { id: 'sol-price', base: 140 },
+            { id: 'btc-price', base: 92450 },
+            { id: 'eth-price', base: 3150 },
+            { id: 'sol-price', base: 143 },
             { id: 'matic-price', base: 0.70 }
         ];
 
