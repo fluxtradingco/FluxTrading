@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Monitoring Node</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<style>
+    :root {
+    /* Dark Theme (Default) */
+    --bg-color: #0d1117;
+    --card-bg: #161b22;
+    --sidebar-bg: #090c10;
+    --text-main: #ffffff;
+    --text-dim: #8b949e;
+    --border: #30363d;
+    --accent: #00d2ff;
+}
+
+[data-theme="light"] {
+    --bg-color: #f0f2f5;
+    --card-bg: #ffffff;
+    --sidebar-bg: #ffffff;
+    --text-main: #1a1a1a;
+    --text-dim: #65676b;
+    --border: #e4e6eb;
+    --accent: #007bff;
+}
+
+body { margin: 0; font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-main); transition: 0.3s; }
+.dashboard-container { display: flex; height: 100vh; }
+
+/* Sidebar & Theme Switch */
+.sidebar { width: 240px; border-right: 1px solid var(--border); padding: 25px; display: flex; flex-direction: column; }
+.logo { font-weight: 800; color: var(--accent); margin-bottom: 30px; }
+.logo span { color: var(--text-main); }
+.theme-toggle { margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border); }
+#theme-btn { width: 100%; padding: 10px; cursor: pointer; border-radius: 6px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main); }
+
+/* Main layout */
+.content { flex: 1; padding: 40px; overflow-y: auto; }
+.grid-container { display: grid; grid-template-columns: 1fr 1.5fr; gap: 25px; }
+.card { background: var(--card-bg); padding: 30px; border-radius: 12px; border: 1px solid var(--border); position: relative; }
+
+/* Balance Styles */
+.balance-display { font-size: 52px; font-weight: bold; margin: 20px 0; transition: color 0.2s ease; }
+.highlight { color: var(--accent); }
+.status { font-size: 13px; color: var(--text-dim); }
+.warning { color: #e67e22; font-weight: bold; }
+
+/* Chart Styling */
+.chart-container { height: 200px; margin-top: 20px; }
+.tier-badge { position: absolute; top: 20px; right: 20px; background: #e74c3c; color: white; font-size: 10px; padding: 5px 10px; border-radius: 4px; font-weight: bold; }
+.btn { background: var(--accent); border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+</style>
+<body>
+    <div class="dashboard-container">
+        <nav class="sidebar" >
+            <div class="logo"> <img src="flux_logo.png" alt="FLUX"></div>
+            <ul>
+                <p></p>
+                <li class="active" style="padding: 20px 20px; color: green;">Account Monitor</li>
+                <li style="padding: 20px 20px;">User Directory</li>
+            </ul>
+            <div class="theme-toggle">
+
+                <button id="theme-btn"><i class="fas fa-moon"></i></button>
+            </div>
+        </nav>
+
+        <main class="content" style="background-color: #010509;">
+            <header>
+                <div class="header-flex">
+                    <h1>Administrator Monitoring Node</h1>
+                    <div class="user-id">Subject: <strong>Denis Jules Guimond</strong></div>
+                </div>
+            </header>
+
+            <div class="grid-container">
+                <section class="card active-balance">
+                    <h3>Primary Account Balance (CAD)</h3>
+                    <p class="status">Currently in Automated Trading</p>
+                    <div id="main-balance" class="balance-display">1500.00</div>
+                    <div class="controls">
+                        <button class="btn">View Logs</button>
+                    </div>
+                </section>
+
+                <section class="card pending-trading">
+                    <div class="tier-badge">UPGRADE REQUIRED</div>
+                    <h3>Background Trading Income</h3>
+                    <p class="status warning">Locked: Pending Tier 2 Upgrade</p>
+                    <div id="pending-balance" class="balance-display highlight">3500.00</div>
+                    
+                    <div class="chart-container">
+                        <canvas id="tradingChart"></canvas>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+    <script>
+// Initialize Balances
+let mainBal = 1500.00;
+let pendBal = 3500.00;
+
+// Initialize Chart
+const ctx = document.getElementById('tradingChart').getContext('2d');
+const tradingChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: Array(20).fill(''), // X-axis placeholders
+        datasets: [{
+            label: 'Market Flux',
+            data: Array(20).fill(3500),
+            borderColor: '#00d2ff',
+            backgroundColor: 'rgba(0, 210, 255, 0.1)',
+            fill: true,
+            tension: 0.4,
+            pointRadius: 0
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: { y: { display: false }, x: { display: false } }
+    }
+});
+
+// Update logic
+function refreshData() {
+    // 1. Update Main Balance (1450-1550)
+    let oldMain = mainBal;
+    mainBal += (Math.random() * 8 - 4);
+    if(mainBal < 1450) mainBal = 1450;
+    if(mainBal > 1550) mainBal = 1550;
+    
+    const mainEl = document.getElementById('main-balance');
+    mainEl.innerText = mainBal.toLocaleString('en-US', {minimumFractionDigits: 2});
+    mainEl.style.color = mainBal >= oldMain ? "#00ff88" : "#ff4d4d";
+
+    // 2. Update Pending Balance (3500-4500)
+    let oldPend = pendBal;
+    pendBal += (Math.random() * 40 - 20);
+    if(pendBal < 3500) pendBal = 3500;
+    if(pendBal > 4500) pendBal = 4500;
+    
+    const pendEl = document.getElementById('pending-balance');
+    pendEl.innerText = pendBal.toLocaleString('en-US', {minimumFractionDigits: 2});
+    pendEl.style.color = pendBal >= oldPend ? "#00ff88" : "#ff4d4d";
+
+    // 3. Update Chart
+    tradingChart.data.datasets[0].data.push(pendBal);
+    tradingChart.data.datasets[0].data.shift();
+    tradingChart.update('none'); // Update without animation for performance
+}
+
+// Theme Toggle
+document.getElementById('theme-btn').addEventListener('click', () => {
+    const html = document.documentElement;
+    const currentTheme = html.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', newTheme);
+});
+
+setInterval(refreshData, 2000);
+    </script>
+</body>
+</html>
